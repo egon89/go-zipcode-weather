@@ -1,9 +1,13 @@
 # go zipcode weather
 
 ## Local environment
+
+You will need to create an API key from [Weather API](https://www.weatherapi.com/) to use in the environment variable `WEATHER_API_KEY`.
+
+### 1. Running with docker
 ### Build image
 ```bash
-docker build -t go-zipcode-weather .
+docker build -t egon89/go-zipcode-weather .
 ```
 
 ### Run container with environment variables
@@ -12,10 +16,32 @@ docker run --name gzweather -p 8080:8080 \
   -e WEATHER_API_BASE_URL=http://api.weatherapi.com \
   -e WEATHER_API_KEY=weather_api_key \
   -e VIA_CEP_BASE_URL=https://viacep.com.br/ws \
-  go-zipcode-weather:latest
+  egon89/go-zipcode-weather:latest
+```
+---
+
+### 2. Running using golang locally
+Create a `.env` file from `.env.example` and fill the variables.
+```bash
+cp .env.example .env
 ```
 
-### curl
+> Set up the `WEATHER_API_KEY` environment variable with your API key.
+
+To run the application, execute the following command in the root directory of the project:
+```bash
+go run cmd/main.go
+```
+
+### Usage
 ```bash
 curl --location 'http://localhost:8080/weather/{:zipcode}' --verbose
+```
+
+---
+
+## Production environment
+
+```bash
+curl --location 'https://go-zipcode-weather-539371301265.us-central1.run.app/weather/{:zipcode}' --verbose
 ```
