@@ -40,5 +40,6 @@ func (h *WeatherHandler) GetWeather(w http.ResponseWriter, r *http.Request) {
 		TempK: utils.RoundToOneDecimal(output.TempKelvin),
 	}
 
+	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(response)
 }
