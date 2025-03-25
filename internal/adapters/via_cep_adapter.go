@@ -23,6 +23,7 @@ func (vc *ViaCepAdapter) GetCityNameByZipcode(zipcode string) (string, error) {
 	log.Printf("[viaCep] getting city name for zipcode %s\n", zipcode)
 
 	url := fmt.Sprintf("%s/%s/json", config.ViaCepBaseURL, zipcode)
+
 	resp, err := http.Get(url)
 	if err != nil {
 		return "", err

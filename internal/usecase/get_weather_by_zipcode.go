@@ -4,9 +4,9 @@ import (
 	"log"
 	"regexp"
 
+	"github.com/egon89/go-zipcode-weather/internal/entity"
 	"github.com/egon89/go-zipcode-weather/internal/errors"
 	"github.com/egon89/go-zipcode-weather/internal/ports"
-	"github.com/egon89/go-zipcode-weather/internal/utils"
 )
 
 type GetWeatherByZipcode struct {
@@ -40,6 +40,7 @@ func (g *GetWeatherByZipcode) Execute(zipcode string) (GetWeatherByZipcodeOutput
 	if err != nil {
 		return GetWeatherByZipcodeOutputDto{}, errors.ErrZipcodeNotFound
 	}
+
 	log.Printf("getting weather for city %s\n", city)
 
 	tempCelcius, err := g.TemperaturePort.GetTemperatureByCity(city)
@@ -47,10 +48,12 @@ func (g *GetWeatherByZipcode) Execute(zipcode string) (GetWeatherByZipcodeOutput
 		return GetWeatherByZipcodeOutputDto{}, errors.ErrTemperatureNotFound
 	}
 
+	weather := entity.NewWeather(city, tempCelcius)
+
 	return GetWeatherByZipcodeOutputDto{
-		TempCelcius:    tempCelcius,
-		TempFahrenheit: utils.CelsiusToFahrenheit(tempCelcius),
-		TempKelvin:     utils.CelsiusToKelvin(tempCelcius),
+		TempCelcius:    weather.GetTemperature(),
+		TempFahrenheit: weather.GetTemperatureInFarhenheit(),
+		TempKelvin:     weather.GetTemperatureInKelvin(),
 	}, nil
 }
 
