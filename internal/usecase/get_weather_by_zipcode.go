@@ -2,12 +2,16 @@ package usecase
 
 import (
 	"log"
+	"regexp"
 
+	"github.com/egon89/go-zipcode-weather/internal/errors"
 	"github.com/egon89/go-zipcode-weather/internal/ports"
+	"github.com/egon89/go-zipcode-weather/internal/utils"
 )
 
 type GetWeatherByZipcode struct {
-	LocationPort ports.LocationPort
+	LocationPort    ports.LocationPort
+	TemperaturePort ports.TemperaturePort
 }
 
 type GetWeatherByZipcodeOutputDto struct {
@@ -20,22 +24,42 @@ type GetWeatherByZipcodeInterface interface {
 	Execute(zipcode string) (GetWeatherByZipcodeOutputDto, error)
 }
 
-func NewGetWeatherByZipcode(locationPort ports.LocationPort) *GetWeatherByZipcode {
+func NewGetWeatherByZipcode(locationPort ports.LocationPort, TemperaturePort ports.TemperaturePort) *GetWeatherByZipcode {
 	return &GetWeatherByZipcode{
-		LocationPort: locationPort,
+		LocationPort:    locationPort,
+		TemperaturePort: TemperaturePort,
 	}
 }
 
 func (g *GetWeatherByZipcode) Execute(zipcode string) (GetWeatherByZipcodeOutputDto, error) {
+	if err := g.validateZipcode(zipcode); err != nil {
+		return GetWeatherByZipcodeOutputDto{}, err
+	}
+
 	city, err := g.LocationPort.GetCityNameByZipcode(zipcode)
 	if err != nil {
-		return GetWeatherByZipcodeOutputDto{}, err
+		return GetWeatherByZipcodeOutputDto{}, errors.ErrZipcodeNotFound
 	}
 	log.Printf("getting weather for city %s\n", city)
 
+	tempCelcius, err := g.TemperaturePort.GetTemperatureByCity(city)
+	if err != nil {
+		return GetWeatherByZipcodeOutputDto{}, errors.ErrTemperatureNotFound
+	}
+
 	return GetWeatherByZipcodeOutputDto{
-		TempCelcius:    0,
-		TempFahrenheit: 0,
-		TempKelvin:     0,
+		TempCelcius:    tempCelcius,
+		TempFahrenheit: utils.CelsiusToFahrenheit(tempCelcius),
+		TempKelvin:     utils.CelsiusToKelvin(tempCelcius),
 	}, nil
+}
+
+func (g *GetWeatherByZipcode) validateZipcode(zipcode string) error {
+	regex := `^\d{8}$`
+	matched, err := regexp.MatchString(regex, zipcode)
+	if err != nil || !matched {
+		return errors.ErrInvalidZipcode
+	}
+
+	return nil
 }

@@ -13,11 +13,11 @@ import (
 
 func main() {
 	config.LoadEnv()
-	port := config.GetEnv("PORT", "8080")
 
 	viaCepAdapter := adapters.NewViaCepAdapter()
+	weatherApiAdapter := adapters.NewWeatherApiAdapter()
 	weatherHandler := handlers.NewWeatherHandler(
-		usecase.NewGetWeatherByZipcode(viaCepAdapter))
+		usecase.NewGetWeatherByZipcode(viaCepAdapter, weatherApiAdapter))
 
 	r := chi.NewRouter()
 
@@ -29,6 +29,6 @@ func main() {
 	r.Put("/products/{id}", handlers.UpdateProduct)
 	r.Delete("/products/{id}", handlers.DeleteProduct)
 
-	log.Println("Starting server on port " + port)
-	log.Fatal(http.ListenAndServe(":"+port, r))
+	log.Println("Starting server on port " + config.Port)
+	log.Fatal(http.ListenAndServe(":"+config.Port, r))
 }
