@@ -30,12 +30,14 @@ func (wa *WeatherApiAdapter) GetTemperatureByCity(city string) (float64, error) 
 
 	resp, err := http.Get(url)
 	if err != nil {
+		log.Printf("[weatherApi] error calling weather api %s: %s\n", config.WeatherAPIBaseURL, err)
 		return 0, err
 	}
 	defer resp.Body.Close()
 
 	var response weatherApiResponse
 	if err := json.NewDecoder(resp.Body).Decode(&response); err != nil {
+		log.Printf("[weatherApi] error decoding response: %s\n", err)
 		return 0, err
 	}
 

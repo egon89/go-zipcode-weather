@@ -26,12 +26,14 @@ func (vc *ViaCepAdapter) GetCityNameByZipcode(zipcode string) (string, error) {
 
 	resp, err := http.Get(url)
 	if err != nil {
+		log.Printf("[viaCep] error calling viaCep api %s: %s\n", config.ViaCepBaseURL, err)
 		return "", err
 	}
 	defer resp.Body.Close()
 
 	var response viaCepResponse
 	if err := json.NewDecoder(resp.Body).Decode(&response); err != nil {
+		log.Printf("[viaCep] error decoding response: %s\n", err)
 		return "", err
 	}
 
