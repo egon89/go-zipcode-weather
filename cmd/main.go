@@ -23,12 +23,6 @@ func main() {
 
 	r.Get("/weather/{zipcode}", weatherHandler.GetWeather)
 
-	r.Get("/products", handlers.GetProducts)
-	r.Get("/products/{id}", handlers.GetProduct)
-	r.Post("/products", handlers.CreateProduct)
-	r.Put("/products/{id}", handlers.UpdateProduct)
-	r.Delete("/products/{id}", handlers.DeleteProduct)
-
 	log.Println("Starting server on port " + config.Port)
 	log.Fatal(http.ListenAndServe(":"+config.Port, r))
 }
