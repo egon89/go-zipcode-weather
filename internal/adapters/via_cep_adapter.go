@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+
+	"github.com/egon89/go-zipcode-weather/internal/config"
 )
 
 type ViaCepAdapter struct{}
@@ -20,7 +22,7 @@ func NewViaCepAdapter() *ViaCepAdapter {
 func (vc *ViaCepAdapter) GetCityNameByZipcode(zipcode string) (string, error) {
 	log.Printf("[viaCep] getting city name for zipcode %s\n", zipcode)
 
-	url := fmt.Sprintf("https://viacep.com.br/ws/%s/json", zipcode)
+	url := fmt.Sprintf("%s/%s/json", config.ViaCepBaseURL, zipcode)
 	resp, err := http.Get(url)
 	if err != nil {
 		return "", err
