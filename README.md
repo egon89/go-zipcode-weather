@@ -41,6 +41,9 @@ curl --location 'http://localhost:8080/weather/{:zipcode}' --verbose
 ---
 
 ## Production environment
+In your browser or terminal, replace `{:zipcode}` with the desired zip code.
+
+https://go-zipcode-weather-539371301265.us-central1.run.app/weather/{:zipcode}
 
 ```bash
 curl --location 'https://go-zipcode-weather-539371301265.us-central1.run.app/weather/{:zipcode}' --verbose
